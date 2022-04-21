@@ -6,8 +6,7 @@ const cors = require("cors");
 const mongoose = require('mongoose')
 const {getConfig} = require("./config");
 const {authRouter} = require("./resources/auth/auth.router.controller");
-const {usersRouter} = require("./resources/user/users.router.controller");
-const {resultsRouter} = require("./resources/results/results.router.controller");
+const {userRouter} = require("./resources/user/users.router.controller");
 const {testsRouter} = require("./resources/tests/tests.router.controller");
 
 
