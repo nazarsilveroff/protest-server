@@ -5,9 +5,8 @@ function serializeUserResponse(user) {
 
 function serializeUser(user) {
     return {
+        username:user.username,
         email: user.email,
-        subscription: user.subscription,
-        avatarURL: user.avatarURL
     };
 }
 

@@ -6,7 +6,7 @@ const cors = require("cors");
 const mongoose = require('mongoose')
 const {getConfig} = require("./config");
 const {authRouter} = require("./resources/auth/auth.router.controller");
-const {usersRouter} = require("./resources/users/users.router.controller");
+const {usersRouter} = require("./resources/user/users.router.controller");
 const {resultsRouter} = require("./resources/results/results.router.controller");
 const {testsRouter} = require("./resources/tests/tests.router.controller");
 
@@ -46,15 +46,14 @@ class ContactsServer {
 
     initRoutes() {
         this.app.use("/auth", authRouter);
-        this.app.use("/users", usersRouter);
-        this.app.use("/test", testsRouter)
-        this.app.use("/results", resultsRouter)
+        this.app.use("/user", userRouter);
+        this.app.use("/qa-test", testsRouter)
     };
 
     initErrorHandling() {
         this.app.use((err, req, res, next) => {
-            const statusCode = err.status || 500;
-            res.status(statusCode).send(err.message);
+            const {status = 500} = err;
+            res.status(status).send(err.message);
         });
     };
 

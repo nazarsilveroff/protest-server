@@ -1,4 +1,4 @@
-const {serializeUser} = require("../users/users.serializes");
+const {serializeUser} = require("../user/users.serializes");
 
 
 exports.serializeSignInResponse = (userData, token) => {
