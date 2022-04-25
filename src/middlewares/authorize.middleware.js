@@ -1,6 +1,6 @@
 const {Unauthorized, Forbidden} = require("http-errors");
 const jsonwebtoken = require("jsonwebtoken");
-const {getConfig} = require("../../../config");
+const {getConfig} = require("../config");
 
 
 
