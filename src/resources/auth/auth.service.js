@@ -14,8 +14,8 @@ class AuthService {
     return UserModel.findOne({ email });
   }
 
-  async createUser(email, passwordHash) {
-    return UserModel.create({ email, passwordHash });
+  async createUser(nickname, email, passwordHash) {
+    return UserModel.create({ nickname, email, passwordHash });
   }
 
   async checkPassword(password, passwordHash) {
@@ -26,29 +26,30 @@ class AuthService {
     return UserModel.updateOne(id);
   }
 
-  createToken(user) {
+  createToken() {
     const {
       jwt: { secret },
     } = getConfig();
-    const { id } = user;
     return jsonwebtoken.sign(
       {
-        uid: id,
+        uid: secret,
       },
       secret
     );
   }
 
   async signUp(userParams) {
-    const { email, password } = userParams;
+    const { nickname, email, password } = userParams;
     const existingUser = await this.findUser(email);
     if (existingUser) throw new Conflict(`User with ${email} already exist`);
 
     const passwordHash = await this.hashPassword(password);
 
-    const user = await this.createUser(email, passwordHash);
+    const user = await this.createUser(nickname, email, passwordHash);
 
-    return user;
+    const token = this.createToken(user);
+
+    return { user, token };
   }
 
   async signIn(logParams) {
@@ -63,26 +64,15 @@ class AuthService {
     const token = this.createToken(existingUser);
     return { existingUser, token };
   }
-  async logout(id) {
-    try {
-      return await this.updateUser({ _id: id }, { token: null });
-    } catch (error) {
-      console.log("error", error.message);
-    }
-  }
 }
 
 exports.authService = new AuthService();
 
 exports.logoutUser = async (req, res, next) => {
   try {
-    const user = await UserModel.findByIdAndUpdate(
-      req.userId,
-      {
-        token: null,
-      },
-      { new: true }
-    );
+    const user = await UserModel.findByIdAndUpdate(req.userId, {
+      token: null,
+    });
     if (!user) {
       res.status(401).json({ message: "Not authorized" });
       return;
