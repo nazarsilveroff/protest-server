@@ -1,24 +1,25 @@
-const {Unauthorized, Forbidden} = require("http-errors");
+const { Unauthorized, Forbidden } = require("http-errors");
 const jsonwebtoken = require("jsonwebtoken");
-const {getConfig} = require("../config");
-
-
+const { getConfig } = require("../config");
 
 exports.authorize = () => {
-    return (req, res, next) => {
-        const authHeader = req.headers["authorization"] || "";
-        const token = authHeader.replace("Bearer ", "");
+  return (req, res, next) => {
+    const authHeader = req.headers["authorization"] || "";
+    const token = authHeader.replace("Bearer ", "");
 
-        let payload;
-        const {jwt: {secret}} = getConfig();
-        try {
-            payload = jsonwebtoken.verify(token, secret)
-        } catch (error) {
-            throw new Unauthorized();
-        }
-
-        req.userId = payload.uid;
-        next();
+    let payload;
+    const {
+      jwt: { secret },
+    } = getConfig();
+    try {
+      payload = jsonwebtoken.verify(token, secret);
+    } catch (error) {
+      throw new Unauthorized();
     }
-}
 
+    console.log(res);
+
+    req.userId = req._id;
+    next();
+  };
+};

@@ -13,8 +13,8 @@ authRouter.post(
   "/sign-up",
   validate(signUpSchema),
   catchErrors(async (req, res, next) => {
-    const user = await authService.signUp(req.body);
-    res.status(201).send(serializeUserResponse(user)).json(user);
+    const {user, token} = await authService.signUp(req.body);
+    res.status(201).send(serializeUserResponse(user, token));
   })
 );
 
