@@ -39,10 +39,9 @@ class AuthService {
         if (existingUser) throw new Conflict(`User with ${email} already exist`);
 
         const passwordHash = await this.hashPassword(password);
-
-        const user = await this.createUser({username, email, passwordHash});
-
         const token = this.createToken(email);
+
+        const user = await this.createUser({username, email, passwordHash,token});
 
         return {user, token};
     }
@@ -84,24 +83,18 @@ class AuthService {
             const user = await this.createUser({username, email, token})
             return {user, token}
         }
+    };
 
+    async logout(email) {
+        const user = await this.findUser(email);
+        if (!user) throw new NotFound(`User not found`);
+
+        const {id} = user
+        await UserModel.findByIdAndUpdate(id, {
+            token: null,
+        });
+        return user
     }
-
 }
 
 exports.authService = new AuthService();
-
-exports.logoutUser = async (req, res, next) => {
-    try {
-        const user = await UserModel.findByIdAndUpdate(req.userId, {
-            token: null,
-        });
-        if (!user) {
-            res.status(401).json({message: "Not authorized"});
-            return;
-        }
-        res.status(204).json("logout");
-    } catch (error) {
-        res.json(error.message);
-    }
-};

@@ -3,7 +3,7 @@ const {signInSchema, signUpSchema} = require("./auth.schema");
 const {catchErrors} = require("../../middlewares/catchErrors");
 const {validate} = require("../../middlewares/validate");
 const {authService, logoutUser} = require("./auth.service");
-const {serializeUserResponse} = require("../user/users.serializes");
+const {serializeUserResponse, serializeUser} = require("../user/users.serializes");
 const {serializeSignInResponse} = require("./auth.serializers");
 const {authorize} = require("../../middlewares/authorize.middleware");
 
@@ -33,6 +33,9 @@ authRouter.post('/google',
         res.status(201).send(serializeSignInResponse(user, token));
     }))
 
-authRouter.get("/logout", authorize(), logoutUser);
+authRouter.get("/logout", authorize(), catchErrors(async (req, res, next) => {
+    const user = await authService.logout(req.email)
+    res.status(201).send(serializeUser(user))
+}));
 
 exports.authRouter = authRouter;
