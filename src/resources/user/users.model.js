@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 const { Schema } = mongoose;
 
 const userSchema = new Schema({
-  nickname: {
+  username: {
     type: String,
   },
   email: {
@@ -12,7 +12,6 @@ const userSchema = new Schema({
   },
   passwordHash: {
     type: String,
-    required: true,
   },
   token: {
     type: String,

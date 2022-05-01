@@ -9,5 +9,9 @@ exports.getConfig = () => {
     jwt: {
       secret: process.env.JWT_SECRET || "secret",
     },
+    OAuth:{
+      client_ID:process.env.OAuth_Client_ID,
+      secret:process.env.OAuth_Client_SECRET
+    },
   };
 };

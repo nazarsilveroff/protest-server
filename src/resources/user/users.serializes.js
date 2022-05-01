@@ -8,7 +8,7 @@ function serializeUserResponse(user, token) {
 
 function serializeUser(user) {
     return {
-        nickname: user.nickname,
+        username: user.username,
         email: user.email,
     };
 }

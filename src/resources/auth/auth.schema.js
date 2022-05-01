@@ -4,7 +4,7 @@ const emailSchema = Joi.string().email().required();
 const passwordSchema = Joi.string().min(8).required();
 
 exports.signUpSchema = Joi.object({
-  nickname: nicknameSchema,
+  username: nicknameSchema,
   email: emailSchema,
   password: passwordSchema,
 });
