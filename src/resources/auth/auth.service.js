@@ -74,8 +74,8 @@ class AuthService {
         const existingUser = await this.findUser(email);
 
         if (existingUser) {
-            token = this.createToken(email)
             const {username, email} = existingUser
+            token = this.createToken(email)
             return {user: {username, email}, token}
         }
 
