@@ -1,4 +1,4 @@
-const { Unauthorized, Forbidden } = require("http-errors");
+const { Unauthorized } = require("http-errors");
 const jsonwebtoken = require("jsonwebtoken");
 const { getConfig } = require("../config");
 
@@ -8,18 +8,15 @@ exports.authorize = () => {
     const token = authHeader.replace("Bearer ", "");
 
     let payload;
-    const {
-      jwt: { secret },
-    } = getConfig();
+    const {jwt: { secret }} = getConfig();
     try {
       payload = jsonwebtoken.verify(token, secret);
     } catch (error) {
       throw new Unauthorized();
     }
+    console.log(payload)
 
-    console.log(res);
-
-    req.userId = req._id;
+    req.email = payload.userEmail;
     next();
   };
 };

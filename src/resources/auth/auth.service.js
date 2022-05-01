@@ -28,9 +28,9 @@ class AuthService {
         return UserModel.updateOne(id);
     }
 
-    createToken() {
+    createToken(email) {
         const {jwt: {secret}} = getConfig();
-        return jsonwebtoken.sign({uid: secret}, secret);
+        return jsonwebtoken.sign({userEmail: email}, secret);
     }
 
     async signUp(userParams) {
@@ -42,7 +42,7 @@ class AuthService {
 
         const user = await this.createUser({username, email, passwordHash});
 
-        const token = this.createToken();
+        const token = this.createToken(email);
 
         return {user, token};
     }
@@ -56,7 +56,7 @@ class AuthService {
         const isPasswordCorrect = await this.checkPassword(password, passwordHash);
         if (!isPasswordCorrect) throw new Forbidden(`Password is wrong`);
 
-        const token = this.createToken();
+        const token = this.createToken(email);
         return {existingUser, token};
     }
 
@@ -74,13 +74,13 @@ class AuthService {
         const existingUser = await this.findUser(email);
 
         if (existingUser) {
-            token = this.createToken()
+            token = this.createToken(email)
             const {username, email} = existingUser
             return {user: {username, email}, token}
         }
 
         if (!existingUser) {
-            token = this.createToken()
+            token = this.createToken(email)
             const user = await this.createUser({username, email, token})
             return {user, token}
         }
