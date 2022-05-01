@@ -14,7 +14,6 @@ exports.authorize = () => {
     } catch (error) {
       throw new Unauthorized();
     }
-    console.log(payload)
 
     req.email = payload.userEmail;
     next();
