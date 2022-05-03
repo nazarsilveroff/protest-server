@@ -1,12 +1,15 @@
-function serializeTest(test) {
-  return {
-    _id: test._id,
-    question: test.question,
-    answers: test.answers,
-    questionType: test.questionType,
-  };
+exports.serializeQuestionsListResponse = (tests) => {
+    return {
+        "questions": tests.map(serializeTest),
+    }
 }
 
-exports.serializeContactsListResponse = (tests) => ({
-  tests: tests.map(serializeTest),
-});
+function serializeTest(test) {
+    return {
+        id: test._id,
+        question: test.question,
+        answers: test.answers,
+    };
+}
+
+
