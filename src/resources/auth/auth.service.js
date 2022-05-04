@@ -52,6 +52,8 @@ class AuthService {
         if (!existingUser) throw new NotFound(`User with ${email} not found`);
 
         const {passwordHash} = existingUser;
+        if(!passwordHash) throw new Forbidden(`We didn’t find your password you probably logged in through Google authentication`);
+
         const isPasswordCorrect = await this.checkPassword(password, passwordHash);
         if (!isPasswordCorrect) throw new Forbidden(`Password is wrong`);
 
