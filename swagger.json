@@ -1,0 +1,604 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "version": "1.0.0",
+    "title": "Pro Test API docs",
+    "description": "API documentation for GoIT project 'Pro Test'. [Backend github repository](https://github.com/nazarsilveroff/protest-server)",
+    "license": {
+      "name": "MIT",
+      "url": "https://opensource.org/licenses/MIT"
+    }
+  },
+  "consumes": ["application/json"],
+  "produces": ["application/json"],
+  "servers": [{ "url": "localhost:3001/" }],
+  "tags": [
+    {
+      "name": "Auth",
+      "description": "Authorization endpoints"
+    },
+    {
+      "name": "QA-test",
+      "description": "QA-test endpoints"
+    }
+  ],
+  "paths": {
+    "/auth/sign-up": {
+      "post": {
+        "tags": ["Auth"],
+        "summary": "User registration",
+        "parameters": [],
+        "requestBody": {
+          "description": "Registration's object",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegistrationRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RegistrationResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request (invalid request body)",
+            "content": {}
+          },
+          "409": {
+            "description": "Provided email already exists",
+            "content": {}
+          }
+        }
+      }
+    },
+    "/auth/sign-in": {
+      "post": {
+        "tags": ["Auth"],
+        "summary": "User authentication",
+        "parameters": [],
+        "requestBody": {
+          "description": "Authentication's object",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LoginResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request (invalid request body)",
+            "content": {}
+          },
+          "403": {
+            "description": "Email doesn't exist / Password is wrong",
+            "content": {}
+          }
+        }
+      }
+    },
+    "/auth/logout": {
+      "get": {
+        "tags": ["Auth"],
+        "summary": "Logout",
+        "security": [{ "Bearer": [] }],
+        "parameters": [],
+        "responses": {
+          "204": {
+            "description": "Successful operation",
+            "content": {}
+          },
+          "400": {
+            "description": "No token provided",
+            "content": {}
+          },
+          "401": {
+            "description": "Unauthorized (invalid access token)",
+            "content": {}
+          },
+          "404": {
+            "description": "Invalid user / Invalid session",
+            "content": {}
+          }
+        }
+      }
+    },
+    "/auth/google": {
+      "post": {
+        "tags": ["Auth"],
+        "summary": "Google authentication. WARNING: Works only for sign-in, after registered on front-end (if you're writing your back-end for a SPECIFIC front-end, then you can configure it right to work both for sign-up & sign-in)",
+        "responses": {
+          "200": {
+            "description": "Successful operation (redirect to front-end with accessToken, refreshToken and sid in query). Then use GET /user",
+            "content": {}
+          },
+          "403": {
+            "description": "Not registered or registered with postman",
+            "content": {}
+          }
+        }
+      }
+    },
+    "/qa-test/:questionType": {
+      "get": {
+        "tags": ["QA-test"],
+        "summary": "Get QA tech test questions",
+        "parameters": [],
+        "security": [{ "Bearer": [] }],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QATechTest"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {}
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {}
+          }
+        }
+      },
+      "post": {
+        "tags": ["QA-test"],
+        "summary": "Get QA tech test results",
+        "parameters": [],
+        "security": [{ "Bearer": [] }],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GetTechResults"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TestResult"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request (invalid request body / no token provided)",
+            "content": {}
+          },
+          "401": {
+            "description": "Unauthorized (invalid access token)",
+            "content": {}
+          }
+        }
+      }
+    },
+    "/user/current": {
+      "get": {
+        "tags": ["User"],
+        "summary": "Get all your info",
+        "parameters": [],
+        "security": [{ "Bearer": [] }],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetUserInfo"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "No token provided",
+            "content": {}
+          },
+          "401": {
+            "description": "Unauthorized (invalid access token)",
+            "content": {}
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "RegistrationRequest": {
+        "required": ["username", "email", "password"],
+        "type": "object",
+        "properties": {
+          "username": {
+            "type": "string",
+            "description": "User's name",
+            "example": "User"
+          },
+          "email": {
+            "type": "string",
+            "description": "User's email",
+            "format": "email"
+          },
+          "password": {
+            "type": "string",
+            "description": "User's password",
+            "example": "qwerty123"
+          }
+        }
+      },
+      "RegistrationResponse": {
+        "type": "object",
+        "properties": {
+          "user": {
+            "type": "object",
+            "properties": {
+              "username": {
+                "type": "string",
+                "description": "User's name",
+                "example": "User"
+              },
+              "email": {
+                "type": "string",
+                "description": "User's email",
+                "format": "email"
+              }
+            }
+          },
+          "token": {
+            "type": "string",
+            "description": "Session's access token (needed for all requests)",
+            "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1aWQiOiI1ZmMyMDg1YmQwOTM2NTI4MTA3Y2UyNzQiLCJzaWQiOiI1ZmMyZDJmY2UxZDIwNTA2NzAyYmRkMjIiLCJpYXQiOjE2MDY2MDM1MTYsImV4cCI6MTYwNjYwNzExNn0.rJ_QjU4KvA76H96RHsvOBChK0Vjbd0NmqjMxdQVJIXA"
+          }
+        }
+      },
+      "LoginRequest": {
+        "required": ["email", "password"],
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "description": "User's email",
+            "format": "email"
+          },
+          "password": {
+            "type": "string",
+            "description": "User's password",
+            "example": "qwerty123"
+          }
+        }
+      },
+      "LoginResponse": {
+        "type": "object",
+        "properties": {
+          "user": {
+            "type": "object",
+            "properties": {
+              "email": {
+                "type": "string",
+                "description": "User's email",
+                "format": "email"
+              },
+              "id": {
+                "type": "string",
+                "description": "User's id",
+                "example": "507f1f77bcf86cd799439012"
+              }
+            }
+          },
+          "token": {
+            "type": "string",
+            "description": "Session's access token (needed for all requests)",
+            "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1aWQiOiI1ZmMyMDg1YmQwOTM2NTI4MTA3Y2UyNzQiLCJzaWQiOiI1ZmMyZDJmY2UxZDIwNTA2NzAyYmRkMjIiLCJpYXQiOjE2MDY2MDM1MTYsImV4cCI6MTYwNjYwNzExNn0.rJ_QjU4KvA76H96RHsvOBChK0Vjbd0NmqjMxdQVJIXA"
+          }
+        }
+      },
+
+      "QATechTest": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "question": {
+              "type": "string",
+              "description": "A question"
+            },
+            "questionId": {
+              "type": "integer",
+              "description": "Question's id"
+            },
+            "answers": {
+              "type": "array",
+              "description": "Answers to the question",
+              "items": {
+                "type": "string",
+                "description": "Answer options"
+              }
+            }
+          }
+        },
+        "example": [
+          {
+            "question": "Item testing (or side testing) allows you to test individual work of source code units",
+            "questionId": 24,
+            "answers": [
+              "Currency testing",
+              "Testing the web application",
+              "Functional testing",
+              "Interface testing",
+              "Gamma testing",
+              "I don't know"
+            ]
+          },
+          {
+            "question": "What methodology are these 4 stages about: Inception, Elaboration, Construction, Transition",
+            "questionId": 8,
+            "answers": [
+              "RUP",
+              "Kanban",
+              "Scrum",
+              "Agile",
+              "Waterfall",
+              "All options are incorrect"
+            ]
+          },
+          {
+            "question": "What is formal testing?",
+            "questionId": 14,
+            "answers": [
+              "Verification of software, according to the test plan, test procedures and relevant documentation, taking into account the wishes of the client",
+              "Validation of software, according to the test plan, test procedures and relevant documentation, taking into account the wishes of the client",
+              "Verification of software, according to test procedures and relevant documentation, without taking into account the wishes of the client",
+              "I don't know"
+            ]
+          },
+          {
+            "question": "Validation is – ",
+            "questionId": 3,
+            "answers": [
+              "Answers the question whether the product is being created correctly in terms of customer expectations",
+              "During the validation process, we make sure that the product fully complies with the behavior that is expected of it and that the client knows about the presence of such functionality",
+              "Validation, in its essence, largely includes an overall assessment of the software and can be based solely on subjective opinion regarding the correct operation of the application or its components",
+              "Options 1 and 3 are correct",
+              "All options are correct",
+              "All options are incorrect"
+            ]
+          },
+          {
+            "question": "The test plan answers questions like this",
+            "questionId": 19,
+            "answers": [
+              "What's need to be tested",
+              "What's going to be tested",
+              "How and when is it going to be tested",
+              "Test start and end criteria",
+              "All options are correct",
+              "All options are incorrect"
+            ]
+          },
+          {
+            "question": "Agile's main ideas",
+            "questionId": 7,
+            "answers": [
+              "People and interactions are more important than processes and tools",
+              "A working product is more important than comprehensive documentation",
+              "Cooperation with the customer is more important than agreeing on the terms of the contract",
+              "Being ready for change is more important than following the original plan",
+              "All options are correct",
+              "All options are incorrect"
+            ]
+          },
+          {
+            "question": "What is superfluous in the criteria for completing testing",
+            "questionId": 21,
+            "answers": [
+              "Testing report",
+              "Metrics",
+              "Test Analysis Report",
+              "Test case",
+              "All options are correct",
+              "All options are incorrect"
+            ]
+          },
+          {
+            "question": "What are the tasks of the Product Owner?",
+            "questionId": 11,
+            "answers": [
+              "Setting tasks and monitoring deadlines",
+              "Control of budget spending",
+              "Maintenance of project documentation (technical specifications, contracts, acts, invoices, estimates, reports)",
+              "And once again - BUDGETS and TERMS - this is what is most important in his work",
+              "All options are correct",
+              "All options are incorrect"
+            ]
+          },
+          {
+            "question": "Interface testing checks the interaction of individual modules. Most often used to test the user interface of GUI applications",
+            "questionId": 25,
+            "answers": [
+              "Currency testing",
+              "Testing the web application",
+              "Functional testing",
+              "Interface testing",
+              "Gamma testing",
+              "I don't know"
+            ]
+          },
+          {
+            "question": "The correct sequence of Scrum elements",
+            "questionId": 9,
+            "answers": [
+              "Sprint Planning and Sprint Backlog Creation - Working on the sprint. Scrum meetings - Product testing and demonstration - Retrospective. Planning the next sprint",
+              "Creating a product backlog - Working on a sprint. Scrum meetings - Product testing and demonstration - Retrospective. Planning the next sprint",
+              "Product Backlog Creation - Sprint Planning and Sprint Backlog Creation - Product Testing and Demo - Retrospective. Planning the next sprint",
+              "Creating a Product Backlog - Planning a Sprint and creating a Sprint Backlog - Working on a Sprint. Scrum meetings - Retrospective. Planning the next sprint",
+              "Creating a Product Backlog - Planning a Sprint and creating a Sprint Backlog - Working on a Sprint. Scrum meetings - Product testing and demonstration",
+              "All options are incorrect"
+            ]
+          },
+          {
+            "question": "THIS software development methodology is mainly aimed at reducing the work being done at the moment. In this methodology: there are no time limits for either tasks or sprints; there are more and fewer tasks; There is no direct need to set deadlines for completing tasks, but you still need to measure them for a general presentation. What methodology are we talking about?",
+            "questionId": 5,
+            "answers": [
+              "Waterfall",
+              "Scrum",
+              "Agile",
+              "Kanban",
+              "This definition applies to all methodologies",
+              "There is not a right option"
+            ]
+          },
+          {
+            "question": "How many testing principles are there?",
+            "questionId": 1,
+            "answers": ["5", "6", "7", "8", "9", "I don't know"]
+          }
+        ]
+      },
+      "GetTechResults": {
+        "type": "object",
+        "properties": {
+          "answers": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "questionId": {
+                  "type": "integer",
+                  "description": "Question's id"
+                },
+                "answer": {
+                  "type": "string",
+                  "description": "Answer to the question"
+                }
+              }
+            }
+          }
+        },
+        "example": {
+          "answers": [
+            {
+              "questionId": 25,
+              "answer": "Interface testing"
+            },
+            {
+              "questionId": 22,
+              "answer": "Currency testing"
+            },
+            {
+              "questionId": 19,
+              "answer": "All options are correct"
+            },
+            {
+              "questionId": 17,
+              "answer": "Software testing life cycle"
+            },
+            {
+              "questionId": 21,
+              "answer": "Test case"
+            },
+            {
+              "questionId": 14,
+              "answer": "Verification of software, according to the test plan, test procedures and relevant documentation, taking into account the wishes of the client"
+            },
+            {
+              "questionId": 13,
+              "answer": "This is testing by executing a code or program with different input values and confirming the results"
+            },
+            {
+              "questionId": 10,
+              "answer": "All options are correct"
+            },
+            {
+              "questionId": 6,
+              "answer": "eXtreme Programming"
+            },
+            {
+              "questionId": 5,
+              "answer": "Kanban"
+            },
+            {
+              "questionId": 3,
+              "answer": "All options are correct"
+            },
+            {
+              "questionId": 2,
+              "answer": "All options are incorrect"
+            }
+          ]
+        }
+      },
+      "TestResult": {
+        "type": "object",
+        "properties": {
+          "result": {
+            "type": "string",
+            "description": "Test's result",
+            "example": "91%"
+          },
+          "mainMessage": {
+            "type": "string",
+            "description": "Result's main message",
+            "example": "Great!"
+          },
+          "secondaryMessage": {
+            "type": "string",
+            "description": "Result's secondary message",
+            "example": "You have very strong QA knowledge"
+          }
+        }
+      },
+      "GetUserInfo": {
+        "type": "object",
+        "properties": {
+          "username": {
+            "type": "string",
+            "description": "User's email",
+            "example": "Username"
+          },
+          "email": {
+            "type": "string",
+            "description": "User's email",
+            "example": "test@email.com"
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "Bearer": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  }
+}
