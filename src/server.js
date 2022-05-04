@@ -3,7 +3,9 @@ const dotenv = require("dotenv");
 const path = require("path");
 const morgan = require('morgan')
 const cors = require("cors");
-const mongoose = require('mongoose')
+const mongoose = require('mongoose');
+const swaggerUi = require('swagger-ui-express');
+const swaggerDocument = require('../swagger.json');
 const {getConfig} = require("./config");
 const {authRouter} = require("./resources/auth/auth.router.controller");
 const {userRouter} = require("./resources/user/users.router.controller");
@@ -47,6 +49,11 @@ class ContactsServer {
         this.app.use("/auth", authRouter);
         this.app.use("/user", userRouter);
         this.app.use("/qa-test", testsRouter)
+        this.app.use(
+      "/api-docs",
+      swaggerUi.serve,
+      swaggerUi.setup(swaggerDocument)
+    );
     };
 
     initErrorHandling() {
